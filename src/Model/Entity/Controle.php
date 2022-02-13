@@ -29,6 +29,7 @@ class Controle extends Entity
      */
     protected $_accessible = [
         'nome' => true,
+        'descricao' => true,
         'valor' => true,
         'data' => true,
         'bancos_id' => true,

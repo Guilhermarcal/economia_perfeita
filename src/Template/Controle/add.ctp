@@ -44,16 +44,22 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
+                                <label for="descricao">Descrição</label>
+                                <input type="text" name="descricao" class="form-control round" placeholder="Informe a Descrição">
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
                                 <label for="imagem">Valor</label>
                                 <input type="text" name="valor" class="form-control round" placeholder="Informe o valor">
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <?php echo $this->Form->control('bancos_id', ['options' => $bancos, 'class' => 'form-control']); ?>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
                                 <?php echo $this->Form->control('contas_id', ['options' => $contas, 'class' => 'form-control']); ?>
                             </div>

@@ -24,7 +24,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <h6 class="text-muted font-semibold">Saldo</h6>
-                                        <h6 class="font-extrabold mb-0">R$ <?php echo $controle_geral['saldo_total'] ?></h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['saldo_total'], 2, ',', '.') ?></h6>
                                     </div>
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <h6 class="text-muted font-semibold">Saldo Mês Atual</h6>
-                                        <h6 class="font-extrabold mb-0">R$ <?php echo $controle_geral['saldo_total_mes'] ?></h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['saldo_total_mes'], 2, ',', '.') ?></h6>
                                     </div>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                     </div>
                                     <div class="col-md-8">
                                         <h6 class="text-muted font-semibold">Total Entrada</h6>
-                                        <h6 class="font-extrabold mb-0">R$ <?php echo $controle_geral['saldo_entrada'] ?></h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['saldo_entrada'], 2, ',', '.') ?></h6>
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +75,60 @@
                                     </div>
                                     <div class="col-md-8">
                                         <h6 class="text-muted font-semibold">Total Saida</h6>
-                                        <h6 class="font-extrabold mb-0">R$ <?php echo $controle_geral['saldo_saida'] ?></h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['saldo_saida'], 2, ',', '.') ?></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-3 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="stats-icon green">
+                                            <i class="iconly-boldHeart"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6 class="text-muted font-semibold">Disponível Para Gastar</h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['mes']['total_disponivel_para_gastar'], 2, ',', '.') ?></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-3 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="stats-icon red">
+                                            <i class="iconly-boldLock"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6 class="text-muted font-semibold">Já Gastei</h6>
+                                        <h6 class="font-extrabold mb-0">R$ <?php echo number_format($controle_geral['mes']['total_gasto_no_mes'], 2, ',', '.') ?></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-body px-3 py-4-5">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="stats-icon purple">
+                                            <i class="iconly-boldStar"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <h6 class="text-muted font-semibold">Status Conta</h6>
+                                        <h6 class="font-extrabold mb-0"><?php echo $controle_geral['mes']['mensagem'] ?></h6>
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +189,7 @@
                                 </div>
                             </div>
                             <div class="col-6">
-                                <h5 class="mb-0"><?php echo $controle_geral['mes']['bancoBrasil']['total']?></h5>
+                                <h5 class="mb-0"><?php echo number_format($controle_geral['mes']['bancoBrasil']['total'], 2, ',', '.')?></h5>
                             </div>
                             <div class="col-12">
                                 <div id="chart-europe"></div>
@@ -154,7 +207,7 @@
                                 </div>
                             </div>
                             <div class="col-6">
-                                <h5 class="mb-0"><?php echo $controle_geral['mes']['bancoItau']['total']?></h5>
+                                <h5 class="mb-0"><?php echo number_format($controle_geral['mes']['bancoItau']['total'], 2, ',', '.')?></h5>
                             </div>
                             <div class="col-12">
                                 <div id="chart-america"></div>
@@ -172,7 +225,7 @@
                                 </div>
                             </div>
                             <div class="col-6">
-                                <h5 class="mb-0"><?php echo $controle_geral['mes']['bancoNubank']['total']?></h5>
+                                <h5 class="mb-0"><?php echo number_format($controle_geral['mes']['bancoNubank']['total'], 2, ',', '.')?></h5>
                             </div>
                             <div class="col-12">
                                 <div id="chart-indonesia"></div>
@@ -192,7 +245,9 @@
                                 <thead>
                                     <tr>
                                         <th>Banco</th>
+                                        <th>Descrição</th>
                                         <th>Tipo</th>
+                                        <th>Conta</th>
                                         <th>Valor</th>
                                     </tr>
                                 </thead>
@@ -212,10 +267,16 @@
                                                 </div>
                                             </td>
                                             <td class="col-auto">
+                                                <p class=" mb-0"><?php echo $key->descricao ?></p>
+                                            </td>
+                                            <td class="col-auto">
                                                 <p class=" mb-0"><?php echo $key->nome ?></p>
                                             </td>
                                             <td class="col-auto">
-                                                <p class=" mb-0">R$ <?php echo $key->valor ?></p>
+                                                <p class=" mb-0"><?php echo $key->conta->tipo_conta ?></p>
+                                            </td>
+                                            <td class="col-auto">
+                                                <p class=" mb-0">R$ <?php echo number_format($key->valor, 2, ',', '.') ?></p>
                                             </td>
                                         </tr>
                                     <?php } ?>

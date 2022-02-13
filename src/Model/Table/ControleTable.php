@@ -66,6 +66,12 @@ class ControleTable extends Table
             ->notEmptyString('nome');
 
         $validator
+            ->scalar('descricao')
+            ->maxLength('descricao', 100)
+            ->requirePresence('descricao', 'create')
+            ->notEmptyString('descricao');
+
+        $validator
             ->scalar('valor')
             ->maxLength('valor', 20)
             ->requirePresence('valor', 'create')

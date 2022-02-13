@@ -140,7 +140,6 @@ class ControleController extends AppController
         $controle_geral['bancoItau'] = 0;
         $controle_geral['bancoNubank'] = 0;
 
-
         foreach ($controle as $key) {
             if($key['nome'] == 'Deposito'){
                 $controle_geral['saldo_total'] = $controle_geral['saldo_total'] + doubleval($key['valor']);
@@ -180,7 +179,8 @@ class ControleController extends AppController
         }
 
         for($i = 1; $i <= 12; $i++){
-
+            $controle_geral['mes']['saldo_total_disponivel'][$i] = 0;
+            $controle_geral['mes']['valor_mensal_gasto'][$i] = 0;
             $controle_geral['mes'][$i] = 0;
 
             foreach ($controle as $key) {
@@ -194,11 +194,41 @@ class ControleController extends AppController
                 if(date_format($key['data'], 'm') == $aux){
                     if($key['nome'] == 'Deposito'){
                         $controle_geral['mes'][$i] = $controle_geral['mes'][$i] + doubleval($key['valor']);
+                        $controle_geral['mes']['saldo_total_disponivel'][$i] = $controle_geral['mes']['saldo_total_disponivel'][$i] + doubleval($key['valor']);
                     }else{
                         $controle_geral['mes'][$i] = $controle_geral['mes'][$i] - doubleval($key['valor']);
+                        $controle_geral['mes']['valor_mensal_gasto'][$i] = $controle_geral['mes']['valor_mensal_gasto'][$i] + doubleval($key['valor']);
                     }
                 }
             }
+
+            if($controle_geral['mes']['saldo_total_disponivel'][$i] != 0){
+                $controle_geral['mes']['saldo_total_disponivel'][$i] = $controle_geral['mes']['saldo_total_disponivel'][$i] * 0.4;
+            }
+        }
+
+        $saldo_total_disponivel = 0;
+        $valor_mensal_gasto = 0;
+
+        for($i = 1; $i <= 12; $i++){
+
+            $saldo_total_disponivel = $saldo_total_disponivel + $controle_geral['mes']['saldo_total_disponivel'][$i];
+            $valor_mensal_gasto = $valor_mensal_gasto + $controle_geral['mes']['valor_mensal_gasto'][$i];
+        }
+
+        $controle_geral['mes']['total_disponivel_para_gastar'] = $saldo_total_disponivel - $valor_mensal_gasto;
+        $controle_geral['mes']['total_gasto_no_mes'] = $valor_mensal_gasto;
+
+        if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.2) > $valor_mensal_gasto){
+            $controle_geral['mes']['mensagem'] = "Você está tranquilão!";
+        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.2) <= $valor_mensal_gasto && ($saldo_total_disponivel * 0.5) > $valor_mensal_gasto){
+            $controle_geral['mes']['mensagem'] = "Ainda está de boa!";
+        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.5) <= $valor_mensal_gasto && ($saldo_total_disponivel * 0.8) > $valor_mensal_gasto){
+            $controle_geral['mes']['mensagem'] = "Vai com calma amigão!";
+        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.8) <= $valor_mensal_gasto && $saldo_total_disponivel > $valor_mensal_gasto){
+            $controle_geral['mes']['mensagem'] = "Você chegou no limite, bora dar uma segurada!";
+        }else{
+            $controle_geral['mes']['mensagem'] = "TÁ ACHANDO QUE É UMA MINA DE OURO?";
         }
 
         for($i = 1; $i <= 12; $i++){
