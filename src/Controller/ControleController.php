@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Controller\PessoasController;
 
 /**
  * Controle Controller
@@ -55,18 +56,54 @@ class ControleController extends AppController
 
             $data = $this->request->getData();
 
+            if($data['nome'][0] != 'Transferencia'){
+                $aux = 0;
+            }else{
+                $aux = 1;
+            }
+
             $data['data'] = date('Y-m-d H:i:s');
 
             // FORMATA TODA VIRGULA PARA PONTO
-            for($i = 0; $i < strlen($data['valor']); $i++){
+            for($i = 0; $i < strlen($data['valor'][$aux]); $i++){
 
-                if(substr($data['valor'], $i, 1) == ','){
-                    $data['valor'] = substr($data['valor'], 0, $i).'.'.substr($data['valor'], $i+1);
+                if(substr($data['valor'][$aux], $i, 1) == ','){
+                    $data['valor'][$aux] = substr($data['valor'][$aux], 0, $i).'.'.substr($data['valor'][$aux], $i+1);
                 }
 
             }
 
+            $data['nome'] = $data['nome'][0];
+            $data['descricao'] = $data['descricao'][$aux];
+            $data['valor'] = $data['valor'][$aux];
+            $data['pessoas_id'] = $data['pessoas_id'][$aux];
+            $data['bancos_id'] = 1;
+
+            $controllerPessoas = new PessoasController();
+
+            if($data['nome'] == 'Transferencia'){
+                $this->addTransferencia($data);
+               
+                if(!$controllerPessoas->transferencia($data['pessoas_id'], $data['pessoa_dois'], $data['valor']))
+                    return $this->redirect(['action' => 'add']);
+
+            }else{
+
+                if($data['nome'] == 'Deposito'){
+                    
+                    $controllerPessoas->deposito($data['pessoas_id'], $data['valor']);
+
+                }else{
+
+                    if(!$controllerPessoas->saque($data['pessoas_id'], $data['valor']))
+                        return $this->redirect(['action' => 'add']);
+
+                }
+                  
+            }
+
             $controle = $this->Controle->patchEntity($controle, $data);
+
             if ($this->Controle->save($controle)) {
                 $this->Flash->success(__('The controle has been saved.'));
 
@@ -76,8 +113,26 @@ class ControleController extends AppController
         }
         $bancos = $this->Controle->Bancos->find('list');
         $contas = $this->Controle->Contas->find('list');
-        $this->set(compact('controle', 'bancos', 'contas'));
+        $pessoas = $this->Controle->Pessoas->find('list');
+        $this->set(compact('controle', 'bancos', 'contas', 'pessoas'));
     }
+
+    public function addTransferencia($data)
+    {
+        $controle = $this->Controle->newEntity();
+        
+        $data['nome'] = 'Deposito';
+        $data['descricao'] = $data['descricao'];
+        $data['valor'] = $data['valor'];
+        $data['pessoas_id'] = $data['pessoa_dois'];
+        $data['bancos_id'] = 1;
+
+        $controle = $this->Controle->patchEntity($controle, $data);
+
+        $this->Controle->save($controle);
+
+    }
+
 
     /**
      * Edit method
@@ -128,60 +183,104 @@ class ControleController extends AppController
     public function menu()
     {
         $this->paginate = [
-            'contain' => ['Bancos', 'Contas'],
+            'contain' => ['Bancos', 'Contas', 'Pessoas'],
         ];
         $controle = $this->paginate($this->Controle);
+
+        $pessoas = $this->Controle->Pessoas->find('list');
 
         $controle_geral['saldo_total'] = 0;
         $controle_geral['saldo_total_mes'] = 0;
         $controle_geral['saldo_entrada'] = 0;
         $controle_geral['saldo_saida'] = 0;
-        $controle_geral['bancoBrasil'] = 0;
-        $controle_geral['bancoItau'] = 0;
-        $controle_geral['bancoNubank'] = 0;
+
+        $hex = array_merge(range(0, 9), range('A', 'F'));
+
+        foreach ($pessoas as $key) {
+
+            $cor = '#';
+            while(strlen($cor) < 7){
+                $num = rand(0, 15);
+                $cor .= $hex[$num];
+            }
+
+            $controle_geral[$key] = 0;
+            $controle_geral['mes'][$key]['total'] = 0;
+            $controle_geral['cor'][$key] = $cor;
+
+            for($i = 1; $i <= 12; $i++){
+
+                $controle_geral['mes'][$key][$i] = 0;
+
+            }
+
+        }
 
         foreach ($controle as $key) {
-            if($key['nome'] == 'Deposito'){
-                $controle_geral['saldo_total'] = $controle_geral['saldo_total'] + doubleval($key['valor']);
-                $controle_geral['saldo_entrada'] = $controle_geral['saldo_entrada'] + doubleval($key['valor']);
-            }else{
-                $controle_geral['saldo_total'] = $controle_geral['saldo_total'] - doubleval($key['valor']);
-                $controle_geral['saldo_saida'] = $controle_geral['saldo_saida'] + doubleval($key['valor']);
+
+            $controle_geral[$key['pessoa']['nome']] = 0;
+
+            if($key['pessoa']['nome'] == 'VizuDigital'){
+
+                if($key['nome'] == 'Deposito'){
+                    $controle_geral['saldo_total'] = $controle_geral['saldo_total'] + doubleval($key['valor']);
+                    $controle_geral['saldo_entrada'] = $controle_geral['saldo_entrada'] + doubleval($key['valor']);
+                }else{
+                    $controle_geral['saldo_total'] = $controle_geral['saldo_total'] - doubleval($key['valor']);
+                    $controle_geral['saldo_saida'] = $controle_geral['saldo_saida'] + doubleval($key['valor']);
+                }
+
+                if(date_format($key['data'], 'm') == date('m')){
+                    if($key['nome'] == 'Deposito'){
+                        $controle_geral['saldo_total_mes'] = $controle_geral['saldo_total_mes'] + doubleval($key['valor']);
+                    }else{
+                        $controle_geral['saldo_total_mes'] = $controle_geral['saldo_total_mes'] - doubleval($key['valor']);
+                    }
+                }
+
+                if($key['nome'] == 'Deposito'){
+                    $controle_geral[$key['pessoa']['nome']] = $controle_geral[$key['pessoa']['nome']] + doubleval($key['valor']);
+                }else{
+                    $controle_geral[$key['pessoa']['nome']] = $controle_geral[$key['pessoa']['nome']] - doubleval($key['valor']);
+                }
             }
 
-            if(date_format($key['data'], 'm') == date('m')){
-                if($key['nome'] == 'Deposito'){
-                    $controle_geral['saldo_total_mes'] = $controle_geral['saldo_total_mes'] + doubleval($key['valor']);
-                }else{
-                    $controle_geral['saldo_total_mes'] = $controle_geral['saldo_total_mes'] - doubleval($key['valor']);
+        }
+        
+        for($i = 1; $i <= 12; $i++){
+            $controle_geral['mes']['valor_mensal_gasto'][$i] = 0;
+            $controle_geral['mes'][$i] = 0;
+
+            foreach ($controle as $key) {
+                
+                if($key['pessoa']['nome'] == 'VizuDigital'){
+                    $aux = $i;
+
+                    if($i < 10){
+                        $aux = '0'.$i;
+                    }
+
+                    if(date_format($key['data'], 'm') == $aux){
+                        if($key['nome'] == 'Deposito'){
+                            $controle_geral['mes'][$i] = $controle_geral['mes'][$i] + doubleval($key['valor']);
+                        }else{
+                            $controle_geral['mes'][$i] = $controle_geral['mes'][$i] - doubleval($key['valor']);
+                            $controle_geral['mes']['valor_mensal_gasto'][$i] = $controle_geral['mes']['valor_mensal_gasto'][$i] + doubleval($key['valor']);
+                        }
+                    }
                 }
             }
 
-            if($key['banco']['nome'] == 'Banco do Brasil'){
-                if($key['nome'] == 'Deposito'){
-                    $controle_geral['bancoBrasil'] = $controle_geral['bancoBrasil'] + doubleval($key['valor']);
-                }else{
-                    $controle_geral['bancoBrasil'] = $controle_geral['bancoBrasil'] - doubleval($key['valor']);
-                }
-            }else if($key['banco']['nome'] == 'Itaú'){
-                if($key['nome'] == 'Deposito'){
-                    $controle_geral['bancoItau'] = $controle_geral['bancoItau'] + doubleval($key['valor']);
-                }else{
-                    $controle_geral['bancoItau'] = $controle_geral['bancoItau'] - doubleval($key['valor']);
-                }
-            }else if($key['banco']['nome'] == 'Nubank'){
-                if($key['nome'] == 'Deposito'){
-                    $controle_geral['bancoNubank'] = $controle_geral['bancoNubank'] + doubleval($key['valor']);
-                }else{
-                    $controle_geral['bancoNubank'] = $controle_geral['bancoNubank'] - doubleval($key['valor']);
-                }
-            }
+        }
+
+        $valor_mensal_gasto = 0;
+
+        for($i = 1; $i <= 12; $i++){
+
+            $valor_mensal_gasto = $valor_mensal_gasto + $controle_geral['mes']['valor_mensal_gasto'][$i];
         }
 
         for($i = 1; $i <= 12; $i++){
-            $controle_geral['mes']['saldo_total_disponivel'][$i] = 0;
-            $controle_geral['mes']['valor_mensal_gasto'][$i] = 0;
-            $controle_geral['mes'][$i] = 0;
 
             foreach ($controle as $key) {
                 
@@ -193,92 +292,25 @@ class ControleController extends AppController
 
                 if(date_format($key['data'], 'm') == $aux){
                     if($key['nome'] == 'Deposito'){
-                        $controle_geral['mes'][$i] = $controle_geral['mes'][$i] + doubleval($key['valor']);
-                        $controle_geral['mes']['saldo_total_disponivel'][$i] = $controle_geral['mes']['saldo_total_disponivel'][$i] + doubleval($key['valor']);
+                        $controle_geral['mes'][$key['pessoa']['nome']][$i] = $controle_geral['mes'][$key['pessoa']['nome']][$i] + doubleval($key['valor']);
                     }else{
-                        $controle_geral['mes'][$i] = $controle_geral['mes'][$i] - doubleval($key['valor']);
-                        $controle_geral['mes']['valor_mensal_gasto'][$i] = $controle_geral['mes']['valor_mensal_gasto'][$i] + doubleval($key['valor']);
-                    }
-                }
-            }
-
-            if($controle_geral['mes']['saldo_total_disponivel'][$i] != 0){
-                $controle_geral['mes']['saldo_total_disponivel'][$i] = $controle_geral['mes']['saldo_total_disponivel'][$i] * 0.4;
-            }
-        }
-
-        $saldo_total_disponivel = 0;
-        $valor_mensal_gasto = 0;
-
-        for($i = 1; $i <= 12; $i++){
-
-            $saldo_total_disponivel = $saldo_total_disponivel + $controle_geral['mes']['saldo_total_disponivel'][$i];
-            $valor_mensal_gasto = $valor_mensal_gasto + $controle_geral['mes']['valor_mensal_gasto'][$i];
-        }
-
-        $controle_geral['mes']['total_disponivel_para_gastar'] = $saldo_total_disponivel - $valor_mensal_gasto;
-        $controle_geral['mes']['total_gasto_no_mes'] = $valor_mensal_gasto;
-
-        if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.2) > $valor_mensal_gasto){
-            $controle_geral['mes']['mensagem'] = "Você está tranquilão!";
-        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.2) <= $valor_mensal_gasto && ($saldo_total_disponivel * 0.5) > $valor_mensal_gasto){
-            $controle_geral['mes']['mensagem'] = "Ainda está de boa!";
-        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.5) <= $valor_mensal_gasto && ($saldo_total_disponivel * 0.8) > $valor_mensal_gasto){
-            $controle_geral['mes']['mensagem'] = "Vai com calma amigão!";
-        }else if(($controle_geral['mes']['total_disponivel_para_gastar'] * 0.8) <= $valor_mensal_gasto && $saldo_total_disponivel > $valor_mensal_gasto){
-            $controle_geral['mes']['mensagem'] = "Você chegou no limite, bora dar uma segurada!";
-        }else{
-            $controle_geral['mes']['mensagem'] = "TÁ ACHANDO QUE É UMA MINA DE OURO?";
-        }
-
-        for($i = 1; $i <= 12; $i++){
-
-            $controle_geral['mes']['bancoBrasil'][$i] = 0;
-            $controle_geral['mes']['bancoItau'][$i] = 0;
-            $controle_geral['mes']['bancoNubank'][$i] = 0;
-
-            foreach ($controle as $key) {
-                
-                $aux = $i;
-
-                if($i < 10){
-                    $aux = '0'.$i;
-                }
-
-                if(date_format($key['data'], 'm') == $aux && $key['banco']['nome'] == 'Banco do Brasil'){
-                    if($key['nome'] == 'Deposito'){
-                        $controle_geral['mes']['bancoBrasil'][$i] = $controle_geral['mes']['bancoBrasil'][$i] + doubleval($key['valor']);
-                    }else{
-                        $controle_geral['mes']['bancoBrasil'][$i] = $controle_geral['mes']['bancoBrasil'][$i] - doubleval($key['valor']);
-                    }
-                }else if(date_format($key['data'], 'm') == $aux && $key['banco']['nome'] == 'Itaú'){
-                    if($key['nome'] == 'Deposito'){
-                        $controle_geral['mes']['bancoItau'][$i] = $controle_geral['mes']['bancoItau'][$i] + doubleval($key['valor']);
-                    }else{
-                        $controle_geral['mes']['bancoItau'][$i] = $controle_geral['mes']['bancoItau'][$i] - doubleval($key['valor']);
-                    }
-                }else if(date_format($key['data'], 'm') == $aux && $key['banco']['nome'] == 'Nubank'){
-                    if($key['nome'] == 'Deposito'){
-                        $controle_geral['mes']['bancoNubank'][$i] = $controle_geral['mes']['bancoNubank'][$i] + doubleval($key['valor']);
-                    }else{
-                        $controle_geral['mes']['bancoNubank'][$i] = $controle_geral['mes']['bancoNubank'][$i] - doubleval($key['valor']);
+                        $controle_geral['mes'][$key['pessoa']['nome']][$i] = $controle_geral['mes'][$key['pessoa']['nome']][$i] - doubleval($key['valor']);
                     }
                 }
             }
         }
 
-        $controle_geral['mes']['bancoBrasil']['total'] = 0;
-        $controle_geral['mes']['bancoItau']['total'] = 0;
-        $controle_geral['mes']['bancoNubank']['total'] = 0;
+        foreach ($pessoas as $key) {
+            
+            for($i = 1; $i <= 12; $i++){
 
-        for($i = 1; $i <= 12; $i++){
-
-            $controle_geral['mes']['bancoBrasil']['total'] = $controle_geral['mes']['bancoBrasil']['total'] + $controle_geral['mes']['bancoBrasil'][$i];
-            $controle_geral['mes']['bancoItau']['total'] = $controle_geral['mes']['bancoItau']['total'] + $controle_geral['mes']['bancoItau'][$i];
-            $controle_geral['mes']['bancoNubank']['total'] = $controle_geral['mes']['bancoNubank']['total'] + $controle_geral['mes']['bancoNubank'][$i];
-
+                $controle_geral['mes'][$key]['total'] = $controle_geral['mes'][$key]['total'] + $controle_geral['mes'][$key][$i];
+                $controle_geral[$key] = $controle_geral['mes'][$key]['total'];
+            }
+            
         }
 
+        $this->set('pessoas', $pessoas);
         $this->set('controle_geral', $controle_geral);
         $this->set(compact('controle'));
     }

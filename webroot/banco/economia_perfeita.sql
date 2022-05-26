@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 13-Fev-2022 às 19:09
--- Versão do servidor: 8.0.21
--- versão do PHP: 7.4.9
+-- Tempo de geração: 26-Maio-2022 às 14:36
+-- Versão do servidor: 5.7.36
+-- versão do PHP: 7.4.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,19 +29,19 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `bancos`;
 CREATE TABLE IF NOT EXISTS `bancos` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Extraindo dados da tabela `bancos`
 --
 
 INSERT INTO `bancos` (`id`, `nome`) VALUES
-(1, 'Banco do Brasil'),
-(2, 'Itaú'),
-(3, 'Nubank');
+(1, 'Nubank'),
+(2, 'Inter'),
+(3, 'Itaú');
 
 -- --------------------------------------------------------
 
@@ -51,11 +51,11 @@ INSERT INTO `bancos` (`id`, `nome`) VALUES
 
 DROP TABLE IF EXISTS `contas`;
 CREATE TABLE IF NOT EXISTS `contas` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `tipo_pessoa` varchar(30) NOT NULL,
   `tipo_conta` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Extraindo dados da tabela `contas`
@@ -73,16 +73,43 @@ INSERT INTO `contas` (`id`, `tipo_pessoa`, `tipo_conta`) VALUES
 
 DROP TABLE IF EXISTS `controle`;
 CREATE TABLE IF NOT EXISTS `controle` (
-  `id` int NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(30) NOT NULL,
-  `valor` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `valor` varchar(20) NOT NULL,
   `data` datetime NOT NULL,
-  `bancos_id` int NOT NULL,
-  `contas_id` int NOT NULL,
+  `bancos_id` int(11) NOT NULL,
+  `contas_id` int(11) NOT NULL,
+  `pessoas_id` int(11) NOT NULL,
+  `descricao` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `bancos_id` (`bancos_id`),
-  KEY `contas_id` (`contas_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `contas_id` (`contas_id`),
+  KEY `fk_pessoas` (`pessoas_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pessoas`
+--
+
+DROP TABLE IF EXISTS `pessoas`;
+CREATE TABLE IF NOT EXISTS `pessoas` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(40) NOT NULL,
+  `saldo` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+
+--
+-- Extraindo dados da tabela `pessoas`
+--
+
+INSERT INTO `pessoas` (`id`, `nome`, `saldo`) VALUES
+(1, 'VizuDigital', '0'),
+(2, 'Guilherme', '0'),
+(3, 'Dendera', '0'),
+(4, 'David', '0');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

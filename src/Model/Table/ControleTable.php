@@ -45,6 +45,10 @@ class ControleTable extends Table
             'foreignKey' => 'contas_id',
             'joinType' => 'INNER',
         ]);
+        $this->belongsTo('Pessoas', [
+            'foreignKey' => 'pessoas_id',
+            'joinType' => 'INNER',
+        ]);
     }
 
     /**
@@ -96,6 +100,7 @@ class ControleTable extends Table
     {
         $rules->add($rules->existsIn(['bancos_id'], 'Bancos'));
         $rules->add($rules->existsIn(['contas_id'], 'Contas'));
+        $rules->add($rules->existsIn(['pessoas_id'], 'Pessoas'));
 
         return $rules;
     }

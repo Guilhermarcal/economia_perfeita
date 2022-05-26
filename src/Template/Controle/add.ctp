@@ -32,36 +32,74 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             <div class="form-group">
-                                <label for="nome">Nome</label>
-                                <select class="form-select" name="nome">
+                                <label for="nome">Nome da Ação</label>
+                                <select class="form-select" name="nome[]" id="nome" onchange="alteraExibicaoTransferencia(this.id)">
                                     <option value=""></option>
                                     <option value="Deposito">Deposito</option>
                                     <option value="Saque">Saque</option>
+                                    <option value="Transferencia">Transferência</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                                <label for="descricao">Descrição</label>
-                                <input type="text" name="descricao" class="form-control round" placeholder="Informe a Descrição">
+                        <hr />
+                        <div class="row" id="primeira_linha">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="descricao">Descrição</label>
+                                    <input type="text" name="descricao[]" class="form-control round" placeholder="Informe a Descrição">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="imagem">Valor</label>
+                                    <input type="text" name="valor[]" class="form-control round" placeholder="Informe o valor">
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <?php echo $this->Form->control('pessoas_id[]', ['options' => $pessoas, 'class' => 'form-control', 'label' => 'Nome Pessoa']); ?>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <?php echo $this->Form->control('contas_id', ['options' => $contas, 'class' => 'form-control']); ?>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <label for="imagem">Valor</label>
-                                <input type="text" name="valor" class="form-control round" placeholder="Informe o valor">
+                        <div class="row" id="segunda_linha" style="display: none;">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="descricao">Descrição</label>
+                                    <select class="form-select" name="descricao[]" id="descricao">
+                                        <option value=""></option>
+                                        <option value="Pix">Pix</option>
+                                        <option value="Ted">Ted</option>
+                                        <option value="Outra">Outra</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <?php echo $this->Form->control('bancos_id', ['options' => $bancos, 'class' => 'form-control']); ?>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="imagem">Valor</label>
+                                    <input type="text" name="valor[]" class="form-control round" placeholder="Informe o valor">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="form-group">
-                                <?php echo $this->Form->control('contas_id', ['options' => $contas, 'class' => 'form-control']); ?>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <?php echo $this->Form->control('pessoas_id[]', ['options' => $pessoas, 'class' => 'form-control', 'label' => 'De quem sai']); ?>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Quem recebe</label>
+                                    <select name="pessoa_dois" class="form-control">
+                                        <?php $i = 1; foreach ($pessoas as $key) { ?>
+                                            <option value="<?php echo $i++; ?>"><?php echo $key ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,3 +121,24 @@
 <?= $this->Html->script('/webroot/assets/vendors/apexcharts/apexcharts.js'); ?>
 <?= $this->Html->script('/webroot/assets/js/pages/dashboard.js'); ?>
 <?= $this->Html->script('/webroot/assets/js/mazer.js'); ?>
+<script type="text/javascript">
+    
+    function alteraExibicaoTransferencia(id){
+
+        var select = document.getElementById(id);
+        var value = select.options[select.selectedIndex].value;
+
+        if(value == 'Transferencia'){
+
+            document.getElementById("primeira_linha").style.display = "none";
+            document.getElementById("segunda_linha").style.display = "flex";
+
+        }else{
+
+            document.getElementById("primeira_linha").style.display = "flex";
+            document.getElementById("segunda_linha").style.display = "none";
+
+        }
+    }
+
+</script>

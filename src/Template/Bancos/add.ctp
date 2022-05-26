@@ -21,7 +21,7 @@
             <div class="card">
                 <div class="col-12 col-lg-12">
                     <div class="card-header">
-                        <h4>Histórico de Transação</h4>
+                        <h4>Cadastrar Banco</h4>
                     </div>
                 </div>
                 <div class="card-body">

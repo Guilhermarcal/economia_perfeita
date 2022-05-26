@@ -55,7 +55,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <div id="sidebar" class="active">
         <div class="sidebar-wrapper active">
             <div class="sidebar-header">
-                <div class="d-flex justify-content-between">
+                <div class="justify-content-between"  style="text-align: center;">
                     <div class="logo">
                         <a href="index">
                             <?php echo $this->Html->image('/assets/images/logo/logo.png', [
@@ -83,21 +83,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                         ) ?>
                     </li>
 
-                    <!-- REDIRECT PARA O BANCO  -->
-
-                    <!-- <li class="sidebar-item active">
-                        <?= $this->Html->link(
-                            '<span class="sidebar-link"><i class="bi bi-wallet2"></i><span>' . h('Bancos') . '</span>', 
-                            ['controller' => 'Bancos', 'action' => 'index', '_full' => true],
-                            [
-                                'escape' => false
-                            ]
-                        ) ?>
-                    </li> -->
-
                     <li class="sidebar-item  has-sub">
                         <?= $this->Html->link(
-                            '<span class="sidebar-link"><i class="bi bi-wallet2"></i><span>' . h('Bancos') . '</span>', 
+                            '<span class="sidebar-link"><i class="bi bi-wallet2"></i><span>' . h('Ações') . '</span>', 
                             'javascript:void(0)',
                             [
                                 'escape' => false
@@ -108,6 +96,15 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                                 <?= $this->Html->link(
                                     '<span class="sidebar-link"><span>' . h('Listar Bancos') . '</span>', 
                                     ['controller' => 'Bancos', 'action' => 'index', '_full' => true],
+                                    [
+                                        'escape' => false
+                                    ]
+                                ) ?>
+                            </li>
+                            <li class="submenu-item">
+                                <?= $this->Html->link(
+                                    '<span class="sidebar-link"><span>' . h('Listar Pessoas') . '</span>', 
+                                    ['controller' => 'Pessoas', 'action' => 'index', '_full' => true],
                                     [
                                         'escape' => false
                                     ]

@@ -4,19 +4,13 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Controle Entity
+ * Banco Entity
  *
  * @property int $id
  * @property string $nome
- * @property int $valor
- * @property \Cake\I18n\FrozenTime $data
- * @property int $bancos_id
- * @property int $contas_id
- *
- * @property \App\Model\Entity\Banco $banco
- * @property \App\Model\Entity\Conta $conta
+ * @property string|resource $imagem
  */
-class Controle extends Entity
+class Pessoa extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -29,14 +23,6 @@ class Controle extends Entity
      */
     protected $_accessible = [
         'nome' => true,
-        'descricao' => true,
-        'valor' => true,
-        'data' => true,
-        'bancos_id' => true,
-        'contas_id' => true,
-        'pessoas_id' => true,
-        'banco' => true,
-        'conta' => true,
-        'pessoa' => true,
+        'saldo' => true,
     ];
 }

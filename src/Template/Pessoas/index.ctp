@@ -1,7 +1,7 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Banco[]|\Cake\Collection\CollectionInterface $bancos
+ * @var \App\Model\Entity\Banco[]|\Cake\Collection\CollectionInterface $pessoas
  */
 ?>
 <div id="main">
@@ -20,7 +20,7 @@
             <div class="card">
                 <div class="col-12 col-lg-12">
                     <div class="card-header">
-                        <h4>Bancos Cadastrados</h4>
+                        <h4>Pessoas Cadastradas</h4>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -29,36 +29,37 @@
                                     <tr>
                                         <th scope="col"></th>
                                         <th scope="col"><?= $this->Paginator->sort('nome') ?></th>
+                                        <th scope="col"><?= $this->Paginator->sort('saldo') ?></th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($bancos as $banco): ?>
+                                    <?php foreach ($pessoas as $pessoa): ?>
                                     <tr>
                                         <td>
-                                            <?php echo $this->Html->image('/img/bancos/'.$banco->id.'.jpg', [
+                                            <?php echo $this->Html->image('/img/pessoas/'.$pessoa->id.'.jpg', [
                                                 "alt" => "user",
                                                 "width" => "32px",
                                                 "heigth" => "32px",
                                             ]); ?>
                                         </td>
-                                        <td><?= h($banco->nome) ?></td>
+                                        <td><?= h($pessoa->nome) ?></td>
                                         <td class="actions">
                                             <?= $this->Html->link(
                                                 '<i class="iconly-boldEdit" aria-hidden="true" title="Editar"></i>',
-                                                ['action' => 'edit', $banco->id],
+                                                ['action' => 'edit', $pessoa->id],
                                                 ['escape' => false, 'class' => 'btn btn-success']
                                             ) ?>
 
                                             <?= $this->Form->postLink(
                                                 '<i class="iconly-boldDelete" aria-hidden="true" title="Deletar"></i>',
-                                                ['action' => 'delete', $banco->id],
-                                                ['escape' => false, 'confirm' => __('Você quer deletar # {0}?', $banco->id), 'class' => 'btn btn-danger']
+                                                ['action' => 'delete', $pessoa->id],
+                                                ['escape' => false, 'confirm' => __('Você quer deletar # {0}?', $pessoa->id), 'class' => 'btn btn-danger']
                                             ) ?>
 
                                             <?= $this->Html->link(
                                                 '<i class="iconly-boldShow" aria-hidden="true" title="View"></i>',
-                                                ['action' => 'view', $banco->id],
+                                                ['action' => 'view', $pessoa->id],
                                                 ['escape' => false, 'class' => 'btn btn-warning']
                                             ) ?>
 

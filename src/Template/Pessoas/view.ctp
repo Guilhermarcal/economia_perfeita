@@ -1,7 +1,7 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Banco $banco
+ * @var \App\Model\Entity\pessoa $pessoa
  */
 ?>
 <div id="main">
@@ -20,20 +20,26 @@
             <div class="card">
                 <div class="col-12 col-lg-12">
                     <div class="card-header">
-                        <h4>Ver Bancos - <?php echo $banco['nome'] ?></h4>
+                        <h4>Ver Pessoa - <?php echo $pessoa['nome'] ?></h4>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <div class="form-group">
                                 <label for="nome">Nome</label>
-                                <input type="text" name="nome" id="nome" class="form-control round" placeholder="Nome do Banco" value="<?php echo $banco['nome'] ?>" disabled>
+                                <input type="text" name="nome" id="nome" class="form-control round" placeholder="Nome da Pessoa" value="<?php echo $pessoa['nome'] ?>" disabled>
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                             <div class="form-group">
-                                <?php echo $this->Html->image('/img/bancos/'.$banco->id.'.jpg', [
+                                <label for="saldo">Saldo</label>
+                                <input type="text" name="saldo" id="saldo" class="form-control round" placeholder="Saldo da Pessoa" value="<?php echo $pessoa['saldo'] ?>" disabled>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <?php echo $this->Html->image('/img/pessoas/'.$pessoa->id.'.jpg', [
                                     "alt" => "user",
                                     "width" => "64px",
                                     "heigth" => "64px",
